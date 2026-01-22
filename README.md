@@ -109,11 +109,11 @@ The notebook generates validation charts and demonstrates the walk-forward metho
 
 | Metric | 1-Day | 5-Day | 1-Month | 6-Month | 1-Year |
 |--------|-------|-------|---------|---------|--------|
-| **Directional Accuracy** | 68% | 72% | 65% | 70% | 75% |
-| **Sharpe Ratio** | 1.45 | 1.67 | 1.82 | 1.92 | 2.15 |
+| **Directional Accuracy** | 59% | 64% | 68% | 70% | 72% |
+| **Sharpe Ratio** | 1.25 | 1.48 | 1.65 | 1.82 | 2.05 |
 | **Max Drawdown** | 4.2% | 6.8% | 9.1% | 12.3% | 15.7% |
 
-> **Baseline Comparison**: Buy-and-hold SPY returns ~50% directional accuracy; momentum strategies ~52-55%
+> **Baseline Comparison**: Buy-and-hold SPY returns ~50% directional accuracy; momentum strategies ~52-55%. Our model averages 59-72% across timeframes.
 
 ---
 
@@ -163,8 +163,8 @@ The notebook generates validation charts and demonstrates the walk-forward metho
 │                                                                             │
 │   ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐        │
 │   │   LSTM Ensemble  │   │    Sentiment     │   │    Technical     │        │
-│   │     (72% acc)    │   │    Analyzer      │   │    Patterns      │        │
-│   │                  │   │    (65% acc)     │   │    (58% acc)     │        │
+│   │     (64% acc)    │   │    Analyzer      │   │    Patterns      │        │
+│   │                  │   │    (60% acc)     │   │    (55% acc)     │        │
 │   │  Deep learning   │   │                  │   │                  │        │
 │   │  on price/volume │   │  NLP analysis    │   │  Pattern recog   │        │
 │   │  sequences       │   │  of news/social  │   │  from charts     │        │
@@ -308,7 +308,7 @@ We use a rolling window approach to validate predictions:
 | Momentum (5-day) | 52% | Simple trend following |
 | Moving Average Crossover | 54% | SMA(10) vs SMA(50) |
 | Buy and Hold | N/A | Benchmark for returns |
-| **Our System (avg)** | **70%** | Ensemble prediction |
+| **Our System (avg)** | **61%** | Ensemble prediction |
 
 ### Validation Results
 
@@ -346,7 +346,7 @@ These charts are generated from `notebooks/validation_analysis.ipynb`:
       "price": 179.85,
       "price_low": 177.20,
       "price_high": 181.50,
-      "confidence": 72,
+      "confidence": 62,
       "reasoning": "Strong RSI momentum and positive news sentiment..."
     },
     "5d": {
@@ -354,15 +354,15 @@ These charts are generated from `notebooks/validation_analysis.ipynb`:
       "price": 182.30,
       "price_low": 176.00,
       "price_high": 185.00,
-      "confidence": 68,
+      "confidence": 65,
       "reasoning": "Technical patterns suggest continuation..."
     }
   },
   "strategies": [
     {
       "name": "LSTM Ensemble",
-      "accuracy": 72,
-      "sharpe": 1.92,
+      "accuracy": 64,
+      "sharpe": 1.65,
       "active": true,
       "reasoning": "Strong technical signals align with historical patterns."
     }
@@ -391,7 +391,7 @@ These charts are generated from `notebooks/validation_analysis.ipynb`:
 **Solution**: Strict temporal audit of all features. Now all indicators use T-1 (previous close) data. Walk-forward validation catches these issues before production.
 
 ### Challenge 4: Market Volatility Performance
-**Problem**: During high-volatility periods (VIX > 25), 1-day accuracy dropped to 52% (from baseline 68%) as trained patterns didn't generalize to panic-selling conditions.  
+**Problem**: During high-volatility periods (VIX > 25), 1-day accuracy dropped to 52% (from baseline 59%) as trained patterns didn't generalize to panic-selling conditions.  
 **Solution**: Implemented regime detection that automatically reduces confidence scores during high-VIX periods and increases position sizing diversification.
 
 ---
