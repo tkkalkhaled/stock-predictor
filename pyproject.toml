@@ -1,0 +1,120 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stock-predictor"
+version = "1.0.0"
+description = "AI-powered stock market prediction using LSTM ensemble, sentiment analysis, and technical patterns"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Talal Alkhaled", email = "contact@talkhaled.com"}
+]
+maintainers = [
+    {name = "Talal Alkhaled", email = "contact@talkhaled.com"}
+]
+keywords = [
+    "stock-prediction",
+    "machine-learning",
+    "lstm",
+    "sentiment-analysis",
+    "technical-analysis",
+    "trading",
+    "finance",
+    "ai"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.21.0",
+    "pandas>=1.3.0",
+    "torch>=1.9.0",
+    "scikit-learn>=0.24.0",
+    "fastapi>=0.68.0",
+    "uvicorn[standard]>=0.15.0",
+    "pydantic>=1.8.0",
+    "requests>=2.26.0",
+    "aiohttp>=3.7.0",
+    "python-dotenv>=0.19.0",
+    "python-dateutil>=2.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.2.0",
+    "pytest-asyncio>=0.15.0",
+    "httpx>=0.19.0",
+    "mypy>=0.910",
+    "black>=21.7b0",
+    "isort>=5.9.0",
+]
+nlp = [
+    "transformers>=4.10.0",
+    "nltk>=3.6.0",
+]
+viz = [
+    "matplotlib>=3.4.0",
+    "plotly>=5.0.0",
+]
+all = [
+    "stock-predictor[dev,nlp,viz]",
+]
+
+[project.scripts]
+stock-predictor-train = "scripts.train:main"
+stock-predictor-api = "api.predict:main"
+
+[project.urls]
+Homepage = "https://intgr8ai.com/demo/price-tracker"
+Documentation = "https://github.com/talkhaled/stock-predictor#readme"
+Repository = "https://github.com/talkhaled/stock-predictor"
+Issues = "https://github.com/talkhaled/stock-predictor/issues"
+
+[tool.setuptools.packages.find]
+include = ["data*", "models*", "evaluation*", "api*", "scripts*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+    | \.mypy_cache
+    | \.pytest_cache
+    | \.venv
+    | build
+    | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["data", "models", "evaluation", "api", "scripts"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
