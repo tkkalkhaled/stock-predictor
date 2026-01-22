@@ -25,9 +25,9 @@ python-dotenv>=0.19.0
 # Date/Time handling
 python-dateutil>=2.8.0
 
-# Optional: Visualization (for analysis)
-# matplotlib>=3.4.0
-# plotly>=5.0.0
+# Visualization (for notebooks and analysis)
+matplotlib>=3.4.0
+# plotly>=5.0.0  # Optional: interactive charts
 
 # Optional: Advanced NLP (for sentiment)
 # transformers>=4.10.0
