@@ -220,10 +220,18 @@ stock-predictor/
 │   ├── __init__.py
 │   └── train.py                       # Model training script
 │
-└── tests/
-    ├── __init__.py
-    ├── test_models.py                 # Unit tests for models
-    └── test_api.py                    # API integration tests
+├── tests/
+│   ├── __init__.py
+│   ├── test_models.py                 # Unit tests for models
+│   ├── test_api.py                    # API integration tests
+│   └── test_no_lookahead.py           # Lookahead bias prevention tests
+│
+├── notebooks/
+│   └── validation_analysis.ipynb      # Validation curves & analysis
+│
+└── docs/
+    ├── MONITORING.md                  # Performance monitoring guide
+    └── images/                        # Generated charts
 ```
 
 ---
