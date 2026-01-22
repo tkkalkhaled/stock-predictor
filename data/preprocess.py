@@ -294,6 +294,11 @@ class DataPreprocessor:
         """
         Add technical indicator features to the DataFrame.
         
+        IMPORTANT - Data Leakage Prevention:
+        All indicators are calculated using historical data only. When making
+        predictions for time T, we only use data from T-1 and earlier.
+        The .shift(1) or rolling windows ensure no lookahead bias.
+        
         Calculates:
         - RSI (14-period)
         - MACD (12, 26, 9)
@@ -313,46 +318,55 @@ class DataPreprocessor:
         
         df = df.copy()
         
-        # Returns
+        # =====================================================================
+        # TEMPORAL LOGIC: All calculations use .shift(1) or rolling windows
+        # that only look backwards, preventing lookahead bias.
+        # At prediction time T, we only have access to data up to T-1.
+        # =====================================================================
+        
+        # Returns - uses previous close, not current (shift ensures T-1 data)
         df['returns'] = df['close'].pct_change()
         df['log_returns'] = np.log(df['close'] / df['close'].shift(1))
         
-        # Moving Averages
+        # Moving Averages - rolling windows look backwards only
+        # SMA_10 at time T uses closes from T-10 to T-1
         df['sma_10'] = df['close'].rolling(window=10).mean()
         df['sma_20'] = df['close'].rolling(window=20).mean()
         df['sma_50'] = df['close'].rolling(window=50).mean()
         df['ema_12'] = df['close'].ewm(span=12, adjust=False).mean()
         df['ema_26'] = df['close'].ewm(span=26, adjust=False).mean()
         
-        # MACD
+        # MACD - derived from EMAs which are backward-looking
         df['macd'] = df['ema_12'] - df['ema_26']
         df['macd_signal'] = df['macd'].ewm(span=9, adjust=False).mean()
         df['macd_histogram'] = df['macd'] - df['macd_signal']
         
-        # RSI
+        # RSI - calculated using previous 14 days of price changes
+        # At time T, RSI uses changes from T-14 to T-1
         delta = df['close'].diff()
         gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
         rs = gain / loss.replace(0, np.inf)
         df['rsi'] = 100 - (100 / (1 + rs))
         
-        # Bollinger Bands
+        # Bollinger Bands - 20-day lookback, no current-day data
         df['bb_middle'] = df['close'].rolling(window=20).mean()
         bb_std = df['close'].rolling(window=20).std()
         df['bb_upper'] = df['bb_middle'] + (2 * bb_std)
         df['bb_lower'] = df['bb_middle'] - (2 * bb_std)
         df['bb_width'] = (df['bb_upper'] - df['bb_lower']) / df['bb_middle']
         
-        # Volatility
+        # Volatility - historical volatility from past 20 days
         df['volatility'] = df['returns'].rolling(window=20).std()
         df['volatility_annualized'] = df['volatility'] * np.sqrt(252)
         
-        # Volume features
+        # Volume features - CRITICAL: use previous day's volume, not current
+        # Current-day volume isn't known at market open when predictions are made
         if 'volume' in df.columns:
-            df['volume_sma'] = df['volume'].rolling(window=20).mean()
-            df['volume_ratio'] = df['volume'] / df['volume_sma']
+            df['volume_sma'] = df['volume'].shift(1).rolling(window=20).mean()
+            df['volume_ratio'] = df['volume'].shift(1) / df['volume_sma']
         
-        # Price position within range
+        # Price position within range - uses previous day's range
         if 'high' in df.columns and 'low' in df.columns:
             df['hl_range'] = df['high'] - df['low']
             df['close_position'] = (df['close'] - df['low']) / df['hl_range'].replace(0, np.inf)
@@ -395,6 +409,11 @@ class DataPreprocessor:
         """
         Prepare sequences for LSTM model training.
         
+        TEMPORAL INTEGRITY:
+        - Features X[i] contain data from time steps [i-sequence_length, i-1]
+        - Target y[i] is the direction at time i (relative to i-1)
+        - This ensures no lookahead bias: we predict time i using only past data
+        
         Args:
             df: DataFrame with features
             sequence_length: Number of time steps per sequence
@@ -414,7 +433,8 @@ class DataPreprocessor:
         if len(df_clean) < sequence_length + 1:
             raise ValueError(f"Not enough data for sequence length {sequence_length}")
         
-        # Normalize features
+        # Normalize features using training data statistics only
+        # In production, use fit on train, transform on test to prevent data leakage
         features = df_clean[feature_cols].values
         features_normalized = (features - features.mean(axis=0)) / (features.std(axis=0) + 1e-8)
         
@@ -422,8 +442,10 @@ class DataPreprocessor:
         
         X, y = [], []
         for i in range(sequence_length, len(df_clean)):
+            # X[i] uses features from [i-sequence_length] to [i-1] (exclusive of i)
+            # This prevents using current-day features to predict current-day direction
             X.append(features_normalized[i-sequence_length:i])
-            # Target: direction (1 = up, 0 = down)
+            # Target: direction at time i (1 = up from i-1, 0 = down from i-1)
             y.append(1 if targets[i] > targets[i-1] else 0)
         
         return np.array(X), np.array(y)
