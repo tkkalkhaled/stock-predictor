@@ -84,12 +84,24 @@ curl -X POST http://localhost:8000/predict \
 # Install test dependencies
 pip install -e ".[dev]"
 
-# Run all tests
+# Run all tests (39 tests including lookahead bias checks)
 pytest tests/ -v
 
 # Run with coverage
 pytest tests/ -v --cov=.
 ```
+
+### Explore the Validation Notebook
+
+```bash
+# Install Jupyter
+pip install jupyter
+
+# Run the validation analysis notebook
+jupyter notebook notebooks/validation_analysis.ipynb
+```
+
+The notebook generates validation charts and demonstrates the walk-forward methodology.
 
 ---
 
@@ -297,6 +309,28 @@ We use a rolling window approach to validate predictions:
 | Moving Average Crossover | 54% | SMA(10) vs SMA(50) |
 | Buy and Hold | N/A | Benchmark for returns |
 | **Our System (avg)** | **70%** | Ensemble prediction |
+
+### Validation Results
+
+These charts are generated from `notebooks/validation_analysis.ipynb`:
+
+**Walk-Forward Splits** - Each window trains on historical data, tests on future:
+
+![Walk Forward Splits](docs/images/walk_forward_splits.png)
+
+**Accuracy Distribution** - Performance across all validation windows:
+
+![Accuracy Distribution](docs/images/accuracy_distribution.png)
+
+**Baseline Comparison** - Our model vs. simple strategies:
+
+![Baseline Comparison](docs/images/baseline_comparison.png)
+
+**Backtest Results** - Simulated trading performance:
+
+![Backtest Results](docs/images/backtest_results.png)
+
+> **Run the notebook yourself**: `jupyter notebook notebooks/validation_analysis.ipynb`
 
 ---
 
