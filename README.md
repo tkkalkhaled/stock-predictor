@@ -25,7 +25,7 @@ An advanced ML-powered stock prediction system that combines **LSTM neural netwo
 
 ```bash
 # Clone the repository
-git clone https://github.com/talkhaled/stock-predictor.git
+git clone https://github.com/tkkalkhaled/stock-predictor.git
 cd stock-predictor
 
 # Create virtual environment (recommended)

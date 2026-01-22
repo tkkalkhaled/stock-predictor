@@ -80,9 +80,9 @@ stock-predictor-api = "api.predict:main"
 
 [project.urls]
 Homepage = "https://intgr8ai.com/demo/price-tracker"
-Documentation = "https://github.com/talkhaled/stock-predictor#readme"
-Repository = "https://github.com/talkhaled/stock-predictor"
-Issues = "https://github.com/talkhaled/stock-predictor/issues"
+Documentation = "https://github.com/tkkalkhaled/stock-predictor#readme"
+Repository = "https://github.com/tkkalkhaled/stock-predictor"
+Issues = "https://github.com/tkkalkhaled/stock-predictor/issues"
 
 [tool.setuptools.packages.find]
 include = ["data*", "models*", "evaluation*", "api*", "scripts*"]
