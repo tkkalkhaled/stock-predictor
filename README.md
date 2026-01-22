@@ -265,13 +265,13 @@ We use a rolling window approach to validate predictions:
 │                    WALK-FORWARD VALIDATION                      │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  Window 1: Train [Jan-Dec 2022] → Test [Jan 2023]              │
-│  Window 2: Train [Feb 2022-Jan 2023] → Test [Feb 2023]         │
-│  Window 3: Train [Mar 2022-Feb 2023] → Test [Mar 2023]         │
+│  Window 1: Train [Jan-Dec 2022] → Test [Jan 2023]               │
+│  Window 2: Train [Feb 2022-Jan 2023] → Test [Feb 2023]          │
+│  Window 3: Train [Mar 2022-Feb 2023] → Test [Mar 2023]          │
 │  ...                                                            │
-│  Window N: Train [Rolling 12mo] → Test [Next month]            │
+│  Window N: Train [Rolling 12mo] → Test [Next month]             │
 │                                                                 │
-│  Final Accuracy = Average across all test windows              │
+│  Final Accuracy = Average across all test windows               │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
